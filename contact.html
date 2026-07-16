@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Toki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* ===== Toki — design tokens =====
+   Inspiré des zémidjans (motos-taxis) et de la route Parakou.
+   Palette : nuit de savane + ocre du gilet de conducteur + teinte piste asphaltée.
+*/
+:root{
+  --bg: #171410;
+  --surface: #221d17;
+  --surface-2: #2b241b;
+  --line: #3a3226;
+  --text: #f2e9dd;
+  --muted: #a99b87;
+  --ochre: #f5a623;
+  --ochre-dim: #d4881a;
+  --teal: #1e9e8f;
+  --teal-bright: #3fd6c4;
+  --coral: #ef5f6f;
+  --coral-dim: #cf4457;
+  --violet: #8b6ff2;
+  --radius: 14px;
+
+  --font-display: "Space Grotesk", "Archivo", sans-serif;
+  --font-body: "Inter", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+*{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height:1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img{ max-width:100%; display:block; }
+a{ color: inherit; text-decoration:none; }
+
+h1,h2,h3{
+  font-family: var(--font-display);
+  font-weight:700;
+  letter-spacing:-0.01em;
+  margin: 0 0 .4em;
+}
+.eyebrow{
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ochre);
+}
+p{ margin: 0 0 1em; color: var(--muted); }
+.container{
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header / nav */
+header.site{
+  position: sticky; top:0; z-index: 50;
+  background: rgba(23,20,16,0.86);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.nav{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 16px 24px;
+  max-width: 1120px; margin: 0 auto;
+}
+.brand{
+  display:flex; align-items:center; gap:10px;
+  font-family: var(--font-display); font-weight:700; font-size:1.25rem;
+  color: var(--text);
+}
+.brand .dot{ width:9px; height:9px; border-radius:50%; background: var(--ochre); box-shadow: 0 0 12px var(--ochre); }
+.nav-links{ display:flex; gap: 28px; font-size:.95rem; }
+.nav-links a{ color: var(--muted); transition: color .2s; position:relative; }
+.nav-links a:hover, .nav-links a.active{ color: var(--text); }
+.nav-links a.active::after{
+  content:""; position:absolute; left:0; right:0; bottom:-8px; height:2px; background: var(--ochre);
+}
+.nav-cta{
+  padding: 9px 18px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--ochre), var(--coral));
+  color: #171410; font-weight:600; font-size:.9rem;
+}
+.nav-toggle{ display:none; background:none; border:none; color:var(--text); font-size:1.4rem; }
+
+@media (max-width: 760px){
+  .nav-links{
+    position:absolute; top:100%; left:0; right:0;
+    background: var(--surface); border-bottom:1px solid var(--line);
+    flex-direction:column; padding: 12px 24px 20px; gap:16px;
+    display:none;
+  }
+  .nav-links.open{ display:flex; }
+  .nav-toggle{ display:block; }
+  .nav-cta{ display:none; }
+}
+
+/* Hero with route motif */
+.hero{
+  padding: 88px 0 60px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";
+  position:absolute; top:-160px; right:-160px;
+  width:520px; height:520px; border-radius:50%;
+  background: radial-gradient(circle, rgba(245,166,35,0.35), transparent 70%);
+  pointer-events:none;
+}
+.hero::after{
+  content:"";
+  position:absolute; bottom:-200px; left:-140px;
+  width:460px; height:460px; border-radius:50%;
+  background: radial-gradient(circle, rgba(31,158,143,0.30), transparent 70%);
+  pointer-events:none;
+}
+.hero .container{ position:relative; z-index:1; }
+.hero-grid{
+  display:grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items:center;
+}
+@media (max-width: 860px){ .hero-grid{ grid-template-columns:1fr; } }
+.hero h1{ font-size: clamp(2.2rem, 4.2vw, 3.4rem); color: var(--text); }
+.hero h1 .accent{ color: var(--ochre); }
+.hero p.lead{ font-size:1.05rem; max-width: 46ch; }
+.hero-actions{ display:flex; gap:14px; margin-top: 28px; flex-wrap:wrap; }
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 13px 24px; border-radius: 10px;
+  font-weight:600; font-size:.95rem; cursor:pointer; border:1px solid transparent;
+}
+.btn-primary{ background: linear-gradient(135deg, var(--ochre), var(--coral)); color:#171410; }
+.btn-primary:hover{ background: linear-gradient(135deg, var(--ochre-dim), var(--coral-dim)); }
+.btn-ghost{ border-color: var(--line); color: var(--text); }
+.btn-ghost:hover{ border-color: var(--muted); }
+
+/* Route diagram (signature element) */
+.route-panel{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  position:relative;
+}
+.route-panel .eyebrow{ display:block; margin-bottom: 18px; }
+.route{
+  position:relative;
+  padding-left: 6px;
+}
+.route-line{
+  position:absolute; left: 15px; top: 10px; bottom: 10px;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--line) 0 6px, transparent 6px 12px);
+}
+.route-line .fill{
+  position:absolute; left:0; top:0; width:100%; height:0%;
+  background: var(--ochre);
+  animation: fillRoute 3.2s ease-in-out infinite;
+}
+@keyframes fillRoute{
+  0%{ height:0%; }
+  45%{ height:100%; }
+  75%{ height:100%; }
+  100%{ height:100%; opacity:0; }
+}
+.stop{
+  display:flex; gap:16px; align-items:flex-start;
+  padding: 14px 0 14px 0;
+  position:relative;
+}
+.stop .marker{
+  width:32px; height:32px; border-radius:50%;
+  background: var(--surface-2); border: 1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-mono); font-size:.8rem; color: var(--muted);
+  flex-shrink:0; z-index:1;
+}
+.stop:first-child .marker{ background: var(--ochre); color:#171410; border-color: var(--ochre); }
+.stop:nth-child(3) .marker{ border-color: var(--teal-bright); color: var(--teal-bright); }
+.stop:nth-child(4) .marker{ border-color: var(--coral); color: var(--coral); }
+.stop:nth-child(5) .marker{ border-color: var(--violet); color: var(--violet); }
+.stop strong{ color: var(--text); display:block; font-size:.98rem; }
+.stop span{ color: var(--muted); font-size:.86rem; }
+
+/* Sections */
+section{ padding: 72px 0; }
+.section-head{ max-width: 640px; margin-bottom: 44px; }
+.section-head h2{ font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--text); }
+
+.grid-3{ display:grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+@media (max-width: 860px){ .grid-3{ grid-template-columns:1fr; } }
+.card{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--ochre);
+  border-radius: var(--radius);
+  padding: 26px;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.card:hover{ transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+.grid-3 .card:nth-child(2){ border-top-color: var(--teal-bright); }
+.grid-3 .card:nth-child(3){ border-top-color: var(--coral); }
+.grid-3 .card:nth-child(4){ border-top-color: var(--violet); }
+.grid-3 .card:nth-child(5){ border-top-color: var(--ochre); }
+.grid-3 .card:nth-child(6){ border-top-color: var(--teal-bright); }
+.card .num{ font-family: var(--font-mono); color: var(--ochre); font-size:.85rem; }
+.grid-3 .card:nth-child(2) .num{ color: var(--teal-bright); }
+.grid-3 .card:nth-child(3) .num{ color: var(--coral); }
+.grid-3 .card:nth-child(4) .num{ color: var(--violet); }
+.grid-3 .card:nth-child(5) .num{ color: var(--ochre); }
+.grid-3 .card:nth-child(6) .num{ color: var(--teal-bright); }
+.card h3{ font-size:1.1rem; margin-top:10px; color: var(--text); }
+.card p{ font-size:.92rem; margin-bottom:0; }
+
+.split{
+  display:grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items:center;
+}
+@media (max-width: 860px){ .split{ grid-template-columns:1fr; } }
+
+.stat-row{ display:flex; gap: 40px; flex-wrap:wrap; margin-top: 30px; }
+.stat{ }
+.stat .n{ font-family: var(--font-mono); font-size:2rem; color: var(--ochre); }
+.stat:nth-child(2) .n{ color: var(--teal-bright); }
+.stat:nth-child(3) .n{ color: var(--coral); }
+.stat .l{ font-size:.85rem; color: var(--muted); }
+
+.cta-band{
+  background: linear-gradient(135deg, rgba(245,166,35,0.16), rgba(31,158,143,0.16)), var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 48px 40px;
+  text-align:center;
+}
+.cta-band h2{ color: var(--text); }
+
+/* Footer */
+footer.site{
+  border-top: 1px solid var(--line);
+  padding: 36px 0;
+  margin-top: 40px;
+}
+.footer-row{
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+}
+.footer-row .brand{ font-size:1.05rem; }
+.footer-links{ display:flex; gap:22px; font-size:.88rem; color: var(--muted); }
+.footer-links a:hover{ color: var(--text); }
+.fine{ font-size:.8rem; color: var(--muted); margin-top:18px; }
+
+/* Reveal on scroll */
+.reveal{ opacity:0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in{ opacity:1; transform:none; }
+
+@media (prefers-reduced-motion: reduce){
+  .reveal{ opacity:1; transform:none; transition:none; }
+  .route-line .fill{ animation:none; height:100%; }
+}
+
+/* Focus visibility */
+a:focus-visible, button:focus-visible{
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 2px;
+}
+
+/* Page header (services/contact) */
+.page-hero{
+  padding: 64px 0 40px;
+  border-bottom: 1px solid var(--line);
+}
+.page-hero h1{ font-size: clamp(1.9rem, 3.6vw, 2.6rem); }
+
+/* Contact */
+.contact-grid{
+  display:grid; grid-template-columns: 1fr 1fr; gap: 48px;
+}
+@media (max-width: 860px){ .contact-grid{ grid-template-columns:1fr; } }
+.field{ margin-bottom: 18px; }
+.field label{ display:block; font-size:.85rem; color: var(--muted); margin-bottom:6px; }
+.field input, .field textarea{
+  width:100%; padding: 12px 14px; border-radius:8px;
+  background: var(--surface); border:1px solid var(--line); color: var(--text);
+  font-family: var(--font-body); font-size:.95rem;
+}
+.field textarea{ resize: vertical; min-height:120px; }
+.field input:focus, .field textarea:focus{ outline:none; border-color: var(--ochre-dim); }
+.contact-info .item{ display:flex; gap:14px; margin-bottom: 22px; }
+.contact-info .icon{
+  width:40px; height:40px; border-radius:10px; background: var(--surface-2);
+  border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+  color: var(--ochre); flex-shrink:0;
+}
+.contact-info .item:nth-child(2) .icon{ color: var(--teal-bright); }
+.contact-info .item:nth-child(3) .icon{ color: var(--coral); }
+.contact-info .item:nth-child(4) .icon{ color: var(--violet); }
+.contact-info strong{ display:block; color: var(--text); font-size:.95rem; }
+.contact-info span{ color: var(--muted); font-size:.88rem; }
+
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav">
+    <a href="index.html" class="brand"><span class="dot"></span>Toki</a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Accueil</a>
+      <a href="services.html">Services</a>
+      <a href="inscription.html">Devenir conducteur</a>
+      <a href="contact.html" class="active">Contact</a>
+    </nav>
+    <a href="inscription.html" class="nav-cta">Devenir partenaire</a>
+    <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Parlons-en</span>
+    <h1>Client, commerçant ou zémidjan — écris-nous</h1>
+    <p style="max-width:56ch">Dis-nous ce que tu cherches, on te répond sous 24h en semaine.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container contact-grid">
+    <form class="reveal" onsubmit="return false;">
+      <div class="field">
+        <label for="name">Nom complet</label>
+        <input type="text" id="name" name="name" placeholder="Ton nom">
+      </div>
+      <div class="field">
+        <label for="phone">Téléphone</label>
+        <input type="tel" id="phone" name="phone" placeholder="+229 ...">
+      </div>
+      <div class="field">
+        <label for="role">Tu es</label>
+        <input type="text" id="role" name="role" placeholder="Client, commerçant ou zémidjan">
+      </div>
+      <div class="field">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Ta demande ou ta question"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Envoyer le message</button>
+    </form>
+
+    <div class="contact-info reveal">
+      <div class="item">
+        <div class="icon">☎</div>
+        <div><strong>Téléphone / WhatsApp</strong><span>+229 XX XX XX XX — du lundi au samedi, 7h–20h</span></div>
+      </div>
+      <div class="item">
+        <div class="icon">✉</div>
+        <div><strong>Email</strong><span>contact@toki-benin.com</span></div>
+      </div>
+      <div class="item">
+        <div class="icon">◍</div>
+        <div><strong>Zone pilote</strong><span>Parakou, Département du Borgou, Bénin</span></div>
+      </div>
+      <div class="item">
+        <div class="icon">✎</div>
+        <div><strong>Devenir conducteur zémidjan partenaire</strong><span>Précise-le dans ton message, un responsable te contacte pour l'inscription</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="container footer-row">
+    <a href="index.html" class="brand"><span class="dot"></span>Toki</a>
+    <div class="footer-links">
+      <a href="index.html">Accueil</a>
+      <a href="services.html">Services</a>
+      <a href="inscription.html">Devenir conducteur</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+  <div class="container fine">© 2026 Toki — Livraison locale par zémidjans. Parakou, Bénin.</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.querySelector('.nav-toggle');
+  const links = document.querySelector('.nav-links');
+  if (toggle && links) {
+    toggle.addEventListener('click', () => {
+      links.classList.toggle('open');
+      const expanded = links.classList.contains('open');
+      toggle.setAttribute('aria-expanded', expanded);
+    });
+  }
+
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && revealEls.length) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+});
+
+</script>
+</body>
+</html>
