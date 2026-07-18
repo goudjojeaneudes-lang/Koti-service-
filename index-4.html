@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Toki — Livraison Parakou</title>
+<meta name="description" content="Commande une course zémidjan et suis ta livraison en direct à Parakou.">
+<meta name="theme-color" content="#171625">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#171625;
+    --ink-2:#22213A;
+    --yellow:#FFC42D;
+    --red:#E6472A;
+    --green:#1F6E43;
+    --sand:#F7F1E4;
+    --sand-2:#EFE6D2;
+    --text-dim:#8C89A8;
+    --radius:20px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--sand);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none;
+  }
+  h1,h2,h3,.display{font-family:'Sora',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    background:var(--sand);
+    position:relative;
+    padding-bottom:88px;
+  }
+
+  /* ---- Top bar ---- */
+  .topbar{
+    display:flex;align-items:center;gap:10px;
+    padding:18px 20px 14px;
+    background:var(--ink);
+    color:var(--sand);
+    position:sticky;top:0;z-index:20;
+  }
+  .topbar img{width:34px;height:34px;border-radius:9px;}
+  .topbar .word{font-family:'Sora',sans-serif;font-weight:800;font-size:20px;letter-spacing:0.2px;}
+  .topbar .tagline{font-size:11px;color:var(--text-dim);margin-top:-2px;}
+
+  /* ---- Screens ---- */
+  .screen{display:none;padding:24px 20px 10px;animation:fadeIn .25s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---- Hero ---- */
+  .hero{
+    background:linear-gradient(160deg,var(--ink),var(--ink-2));
+    color:var(--sand);
+    border-radius:24px;
+    padding:28px 22px 24px;
+    margin:-2px 0 22px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .eyebrow{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,196,45,0.14);color:var(--yellow);
+    font-size:12px;font-weight:600;padding:5px 10px;border-radius:100px;
+    margin-bottom:14px;
+  }
+  .hero .eyebrow::before{content:"●";font-size:8px;color:var(--green);}
+  .hero h1{font-size:26px;line-height:1.2;margin:0 0 10px;font-weight:800;}
+  .hero p{color:var(--text-dim);font-size:14px;line-height:1.5;margin:0 0 20px;}
+  .hero-actions{display:flex;gap:10px;}
+
+  .btn{
+    border:none;border-radius:14px;padding:13px 16px;
+    font-family:'Sora',sans-serif;font-weight:700;font-size:14px;
+    cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    transition:transform .15s ease;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--yellow);color:var(--ink);flex:1;}
+  .btn-ghost{background:rgba(247,241,228,0.1);color:var(--sand);border:1px solid rgba(247,241,228,0.25);flex:1;}
+  .btn-block{width:100%;}
+  .btn-green{background:var(--green);color:var(--sand);}
+
+  /* road motif */
+  .road-track{position:relative;height:2px;background:repeating-linear-gradient(90deg,var(--sand-2) 0 8px, transparent 8px 16px);margin:0 6px;}
+  .road-dot{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:var(--red);transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(230,71,42,0.15);}
+
+  /* how it works */
+  .steps{margin-top:8px;}
+  .step-row{display:flex;gap:14px;align-items:flex-start;position:relative;padding-bottom:22px;}
+  .step-row:last-child{padding-bottom:0;}
+  .step-row .rail{display:flex;flex-direction:column;align-items:center;}
+  .step-dot{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;flex-shrink:0;}
+  .step-line{width:2px;flex:1;background:repeating-linear-gradient(180deg,var(--sand-2) 0 6px, transparent 6px 12px);margin-top:4px;}
+  .step-content h3{font-size:14.5px;margin:2px 0 3px;}
+  .step-content p{font-size:12.5px;color:#6B6886;margin:0;line-height:1.45;}
+
+  section.block{margin-bottom:26px;}
+  section.block h2{font-size:15px;text-transform:uppercase;letter-spacing:0.06em;color:#6B6886;margin:0 0 14px;font-weight:700;}
+
+  .card{background:#fff;border-radius:18px;padding:18px;border:1px solid #ECE4D0;}
+
+  /* form */
+  label{display:block;font-size:12.5px;font-weight:600;color:#4A4763;margin:14px 0 6px;}
+  label:first-of-type{margin-top:0;}
+  input,select,textarea{
+    width:100%;border:1.5px solid #E4DCC6;background:#fff;border-radius:12px;
+    padding:12px 13px;font-family:'Inter';font-size:14px;color:var(--ink);
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--yellow);border-color:transparent;}
+  textarea{resize:vertical;min-height:70px;}
+  .field-row{display:flex;gap:10px;}
+  .field-row > div{flex:1;}
+  .helper{font-size:11.5px;color:#9C98B8;margin-top:6px;}
+
+  /* tracking */
+  .track-code{display:flex;gap:8px;margin-bottom:18px;}
+  .track-code input{flex:1;text-align:center;letter-spacing:2px;font-family:'JetBrains Mono';}
+  .timeline{margin-top:6px;}
+  .tl-item{display:flex;gap:12px;padding-bottom:20px;position:relative;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-dot{width:14px;height:14px;border-radius:50%;background:#E4DCC6;margin-top:2px;flex-shrink:0;position:relative;z-index:1;}
+  .tl-dot.done{background:var(--green);}
+  .tl-dot.now{background:var(--red);box-shadow:0 0 0 5px rgba(230,71,42,0.15);}
+  .tl-line{position:absolute;left:6.5px;top:16px;bottom:-4px;width:1.5px;background:#E4DCC6;}
+  .tl-item.done .tl-line{background:var(--green);}
+  .tl-title{font-weight:600;font-size:13.5px;}
+  .tl-time{font-size:11.5px;color:#9C98B8;margin-top:1px;}
+
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:4px 9px;border-radius:100px;background:var(--sand-2);color:#6B6886;}
+
+  /* driver */
+  .perk{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #EFE9D9;}
+  .perk:last-child{border-bottom:none;}
+  .perk .ic{width:32px;height:32px;border-radius:9px;background:var(--sand-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .perk h3{font-size:13.5px;margin:0 0 2px;}
+  .perk p{font-size:12px;color:#8C89A8;margin:0;line-height:1.4;}
+
+  /* contact */
+  .contact-item{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid #ECE4D0;border-radius:14px;margin-bottom:10px;text-decoration:none;color:var(--ink);}
+  .contact-item .ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .contact-item .txt strong{display:block;font-size:13.5px;}
+  .contact-item .txt span{font-size:12px;color:#8C89A8;}
+
+  /* bottom nav */
+  .bottomnav{
+    position:fixed;bottom:0;left:0;right:0;
+    max-width:480px;margin:0 auto;
+    background:rgba(23,22,37,0.96);backdrop-filter:blur(8px);
+    display:flex;justify-content:space-around;
+    padding:10px 6px calc(10px + env(safe-area-inset-bottom));
+    z-index:30;
+  }
+  .navbtn{
+    background:none;border:none;color:#6B6886;display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-family:'Sora';font-size:10.5px;font-weight:600;padding:4px 8px;cursor:pointer;
+  }
+  .navbtn svg{width:20px;height:20px;}
+  .navbtn.active{color:var(--yellow);}
+
+  .toast{
+    position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:var(--sand);padding:11px 18px;border-radius:100px;font-size:13px;font-weight:600;
+    opacity:0;pointer-events:none;transition:all .25s ease;z-index:50;white-space:nowrap;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  a.wa-float{
+    position:fixed;right:calc(50% - 240px + 18px);bottom:100px;
+    width:52px;height:52px;border-radius:50%;background:var(--green);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(31,110,67,0.35);
+    z-index:25;
+  }
+  @media (max-width:520px){ a.wa-float{right:18px;} }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <img src="icon-192.png" alt="Toki">
+    <div>
+      <div class="word">toki</div>
+      <div class="tagline">Livraison &amp; courses — Parakou</div>
+    </div>
+  </div>
+
+  <!-- ACCUEIL -->
+  <div class="screen active" id="screen-accueil">
+    <div class="hero">
+      <div class="eyebrow">Zém disponibles maintenant</div>
+      <h1>Ta course arrive<br>plus vite qu'un taxi.</h1>
+      <p>Commande un zémidjan pour un colis ou un trajet, et suis-le en direct jusqu'à l'arrivée.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="go('commander')">Commander</button>
+        <button class="btn btn-ghost" onclick="go('suivi')">Suivre une course</button>
+      </div>
+    </div>
+
+    <section class="block">
+      <h2>Comment ça marche</h2>
+      <div class="steps">
+        <div class="step-row">
+          <div class="rail"><div class="step-dot">01</div><div class="step-line"></div></div>
+          <div class="step-content"><h3>Tu commandes</h3><p>Départ, arrivée, et ce que tu envoies ou où tu vas.</p></div>
+        </div>
+        <div class="step-row">
+          <div class="rail"><div class="step-dot">02</div><div class="step-line"></div></div>
+          <div class="step-content"><h3>Un zém accepte</h3><p>Le conducteur le plus proche prend ta course.</p></div>
+        </div>
+        <div class="step-row">
+          <div class="rail"><div class="step-dot">03</div><div class="step-line"></div></div>
+          <div class="step-content"><h3>Tu suis en direct</h3><p>Position et statut mis à jour jusqu'à la livraison.</p></div>
+        </div>
+        <div class="step-row">
+          <div class="rail"><div class="step-dot">04</div></div>
+          <div class="step-content"><h3>C'est livré</h3><p>Tu confirmes la réception, la course est close.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Toki en chiffres</h2>
+      <div class="card" style="display:flex;justify-content:space-between;text-align:center;">
+        <div><div class="display" style="font-size:20px;font-weight:800;">Parakou</div><div class="helper">Ville pilote</div></div>
+        <div><div class="display" style="font-size:20px;font-weight:800;">2</div><div class="helper">Types de course</div></div>
+        <div><div class="display" style="font-size:20px;font-weight:800;">100%</div><div class="helper">Suivi en direct</div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- COMMANDER -->
+  <div class="screen" id="screen-commander">
+    <h1 style="font-size:20px;margin:2px 0 4px;">Commander une course</h1>
+    <p class="helper" style="margin-bottom:18px;">Remplis les infos, ta demande part directement à notre équipe sur WhatsApp.</p>
+
+    <div class="card">
+      <label>Type de course</label>
+      <select id="f-type">
+        <option>Livraison d'un colis</option>
+        <option>Transport d'une personne</option>
+      </select>
+
+      <div class="field-row">
+        <div><label>Ton nom</label><input id="f-nom" placeholder="Ex : Chabi"></div>
+        <div><label>Téléphone</label><input id="f-tel" placeholder="Ex : 01 97 XX XX XX"></div>
+      </div>
+
+      <label>Adresse de départ</label>
+      <input id="f-depart" placeholder="Quartier, repère...">
+
+      <label>Adresse d'arrivée</label>
+      <input id="f-arrivee" placeholder="Quartier, repère...">
+
+      <label>Détails (optionnel)</label>
+      <textarea id="f-details" placeholder="Ex : petit colis fragile, code portail..."></textarea>
+
+      <button class="btn btn-primary btn-block" style="margin-top:18px;" onclick="sendOrder()">Envoyer la demande</button>
+      <p class="helper" style="text-align:center;margin-top:10px;">Ouvre WhatsApp avec ta demande pré-remplie</p>
+    </div>
+  </div>
+
+  <!-- SUIVI -->
+  <div class="screen" id="screen-suivi">
+    <h1 style="font-size:20px;margin:2px 0 4px;">Suivre ma course</h1>
+    <p class="helper" style="margin-bottom:18px;">Entre le code reçu par WhatsApp après ta commande.</p>
+
+    <div class="track-code">
+      <input placeholder="Ex : TK-284" id="f-code">
+      <button class="btn btn-primary" style="padding:12px 18px;" onclick="showTimeline()">Suivre</button>
+    </div>
+
+    <div class="card" id="timeline-card" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div>
+          <div style="font-weight:700;font-size:14px;">Course TK-284</div>
+          <div class="helper">Zongo → Centre-ville</div>
+        </div>
+        <span class="badge">En route</span>
+      </div>
+      <div class="timeline">
+        <div class="tl-item done"><div class="tl-line"></div><div class="tl-dot done"></div><div><div class="tl-title">Course acceptée</div><div class="tl-time">Kassim B. — moto AB 3021</div></div></div>
+        <div class="tl-item done"><div class="tl-line"></div><div class="tl-dot done"></div><div><div class="tl-title">Colis récupéré</div><div class="tl-time">Il y a 6 min</div></div></div>
+        <div class="tl-item now"><div class="tl-line"></div><div class="tl-dot now"></div><div><div class="tl-title">En route vers toi</div><div class="tl-time">Arrivée estimée : 4 min</div></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div><div class="tl-title" style="color:#9C98B8;">Livré</div></div></div>
+      </div>
+    </div>
+    <p class="helper" id="timeline-hint" style="margin-top:6px;">Le suivi en temps réel arrive avec l'application mobile — ceci est un aperçu du fonctionnement.</p>
+  </div>
+
+  <!-- CHAUFFEUR -->
+  <div class="screen" id="screen-chauffeur">
+    <h1 style="font-size:20px;margin:2px 0 4px;">Devenir zém Toki</h1>
+    <p class="helper" style="margin-bottom:16px;">Reçois des courses près de chez toi à Parakou.</p>
+
+    <div class="card" style="margin-bottom:18px;">
+      <div class="perk"><div class="ic">🏍️</div><div><h3>Tu choisis tes courses</h3><p>Accepte seulement celles qui t'arrangent.</p></div></div>
+      <div class="perk"><div class="ic">💵</div><div><h3>Paiement direct</h3><p>Tu es payé par le client à la livraison.</p></div></div>
+      <div class="perk"><div class="ic">📍</div><div><h3>Près de chez toi</h3><p>Courses attribuées selon ta zone à Parakou.</p></div></div>
+    </div>
+
+    <div class="card">
+      <label>Nom complet</label>
+      <input id="d-nom" placeholder="Ton nom">
+      <label>Téléphone</label>
+      <input id="d-tel" placeholder="Ex : 01 97 XX XX XX">
+      <label>Quartier</label>
+      <input id="d-quartier" placeholder="Ex : Zongo, Banikanni...">
+      <button class="btn btn-green btn-block" style="margin-top:18px;" onclick="sendDriver()">S'inscrire comme zém</button>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="screen" id="screen-contact">
+    <h1 style="font-size:20px;margin:2px 0 4px;">Contact</h1>
+    <p class="helper" style="margin-bottom:18px;">Une question, un souci sur une course ? Écris-nous.</p>
+
+    <a class="contact-item" href="#" onclick="waGeneral();return false;">
+      <div class="ic" style="background:rgba(31,110,67,0.12);">💬</div>
+      <div class="txt"><strong>WhatsApp</strong><span>Réponse rapide, tous les jours</span></div>
+    </a>
+    <a class="contact-item" href="tel:+22900000000">
+      <div class="ic" style="background:rgba(255,196,45,0.16);">📞</div>
+      <div class="txt"><strong>Appeler</strong><span>+229 00 00 00 00</span></div>
+    </a>
+    <div class="contact-item">
+      <div class="ic" style="background:rgba(230,71,42,0.12);">📍</div>
+      <div class="txt"><strong>Zone couverte</strong><span>Parakou et environs</span></div>
+    </div>
+  </div>
+
+  <a class="wa-float" href="#" onclick="waGeneral();return false;" aria-label="WhatsApp">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.6 6.3A8.9 8.9 0 0 0 4 17.4L3 21l3.7-1A8.9 8.9 0 1 0 17.6 6.3Z" stroke="#F7F1E4" stroke-width="1.6"/><path d="M8.5 8.7c-.3.6-.5 1.4.1 2.6.8 1.7 2.6 3.5 4.3 4.2 1.2.5 1.9.3 2.4-.1.4-.3.7-.9.6-1.3l-1.7-.9c-.2-.1-.4-.1-.6.1l-.5.6c-.6-.2-1.6-.9-2.2-1.9l.5-.6c.1-.2.1-.4 0-.6l-.9-1.8c-.2-.4-.7-.4-1-.3Z" fill="#F7F1E4"/></svg>
+  </a>
+
+  <nav class="bottomnav">
+    <button class="navbtn active" data-s="accueil" onclick="go('accueil')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>
+      Accueil
+    </button>
+    <button class="navbtn" data-s="commander" onclick="go('commander')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      Commander
+    </button>
+    <button class="navbtn" data-s="suivi" onclick="go('suivi')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+      Suivi
+    </button>
+    <button class="navbtn" data-s="chauffeur" onclick="go('chauffeur')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="17" r="2.3"/><circle cx="17" cy="17" r="2.3"/><path d="M9 17h6M5 17 7 9h6l3 5M11 9V6h3"/></svg>
+      Chauffeur
+    </button>
+    <button class="navbtn" data-s="contact" onclick="go('contact')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18v12H3z"/><path d="m3 7 9 6 9-6"/></svg>
+      Contact
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const WA_NUMBER = "22900000000"; // à remplacer par le vrai numéro WhatsApp Toki
+
+function go(screen){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+screen).classList.add('active');
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.s===screen));
+  document.getElementById('app').scrollTo({top:0,behavior:'instant'});
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function sendOrder(){
+  const type = document.getElementById('f-type').value;
+  const nom = document.getElementById('f-nom').value.trim();
+  const tel = document.getElementById('f-tel').value.trim();
+  const depart = document.getElementById('f-depart').value.trim();
+  const arrivee = document.getElementById('f-arrivee').value.trim();
+  const details = document.getElementById('f-details').value.trim();
+  if(!nom || !tel || !depart || !arrivee){ toast("Complète au moins nom, téléphone, départ et arrivée"); return; }
+  const msg = `Nouvelle commande Toki%0A— Type : ${encodeURIComponent(type)}%0A— Nom : ${encodeURIComponent(nom)}%0A— Téléphone : ${encodeURIComponent(tel)}%0A— Départ : ${encodeURIComponent(depart)}%0A— Arrivée : ${encodeURIComponent(arrivee)}%0A— Détails : ${encodeURIComponent(details||'—')}`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+}
+
+function sendDriver(){
+  const nom = document.getElementById('d-nom').value.trim();
+  const tel = document.getElementById('d-tel').value.trim();
+  const quartier = document.getElementById('d-quartier').value.trim();
+  if(!nom || !tel || !quartier){ toast("Complète nom, téléphone et quartier"); return; }
+  const msg = `Inscription zém Toki%0A— Nom : ${encodeURIComponent(nom)}%0A— Téléphone : ${encodeURIComponent(tel)}%0A— Quartier : ${encodeURIComponent(quartier)}`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+}
+
+function waGeneral(){
+  window.open(`https://wa.me/${WA_NUMBER}`, '_blank');
+}
+
+function showTimeline(){
+  document.getElementById('timeline-card').style.display = 'block';
+  document.getElementById('timeline-hint').style.display = 'none';
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
